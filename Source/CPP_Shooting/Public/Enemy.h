@@ -4,6 +4,7 @@
 
 #include "CPP_Shooting.h"
 #include "GameFramework/Actor.h"
+#include "EnemyMove.h"
 #include "Enemy.generated.h"
 
 // 타겟을 따라서 이동하고 싶다.
@@ -20,16 +21,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	class UStaticMeshComponent* meshComp;
 
-	// 이동속도
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat")
-	float speed = 500;
 
-	// 필요속성 : 타겟
-	UPROPERTY(VisibleAnywhere, Category="Target")
-	class AActor* target;
-
-	UPROPERTY(BlueprintReadOnly, Category="Stat")
-	FVector dir = FVector(0, 0, 0);
 
 	// 폭발효과 속성
 	UPROPERTY(EditDefaultsOnly, Category="Setting")
@@ -59,4 +51,7 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category="Code")
 	void OnCollisionEnter(AActor* OtherActor);
+
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	class UEnemyMove* enemyMove;
 };
