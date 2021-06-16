@@ -6,25 +6,25 @@
 
 void UScoreUI::PrintCurrentScore(int32 point)
 {
-	// 만약 current score ui widget이 있다면
+	// 만약 current score ui widget 있다면
 	if (Text_CurrentScore)
 	{
-		// point를 할당시켜주자
-		FString scoreStr = FString::Printf(TEXT("Current Score : %d"), point);
-		// ui에 값을 할당
+		// point 를 할당시켜주자.
+		FString scoreStr = FString::Printf(TEXT("Current Score: %d"), point);
+		// ui 에 값을 할당
 		Text_CurrentScore->SetText(FText::FromString(scoreStr));
+		
 	}
-	
 }
 
 void UScoreUI::PrintTopScore(int32 point)
 {
-	// 만약 top score ui widget이 있다면
-	if (Text_CurrentScore)
+	// 만약 top score ui widget 있다면
+	if (Text_TopScore)
 	{
-		// point를 할당시켜주자
-		FString scoreStr = FString::Printf(TEXT("Top Score : %d"), point);
-		// ui에 값을 할당
+		// point 를 할당시켜주자.
+		FString scoreStr = FString::Printf(TEXT("Top Score: %d"), point);
+		// ui 에 값을 할당
 		Text_TopScore->SetText(FText::FromString(scoreStr));
 	}
 }

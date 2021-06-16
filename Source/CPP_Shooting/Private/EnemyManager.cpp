@@ -18,6 +18,8 @@ void AEnemyManager::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	// 타이머 맞추기
+	GetWorld()->GetTimerManager().SetTimer(createTimer, this, &AEnemyManager::CreateEnemy, createTime, true, 0);
 }
 
 // Called every frame
@@ -25,30 +27,28 @@ void AEnemyManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AEnemyManager::CreateEnemy()
+{
 	auto gameMode = Cast<ACPP_ShootingGameModeBase>(GetWorld()->GetAuthGameMode());
+
+	//if (gameMode->GetState() == EGameState::Gameover)
+	//{
+	//	// 타이머 끄기
+	//	GetWorld()->GetTimerManager().ClearTimer(createTimer);
+	//}
 
 	// gamemode 의 상태가 playing 이 아니라면 아래 코드는 실행되지 않도록 하고 싶다.
 	if (gameMode->GetState() != EGameState::Playing)
 	{
 		return;
 	}
-	// - 일정시간에 한번씩 "적 생성" 로그를 찍고 싶다.
-	// 1. 시간이 흘렀으니까
-	currentTime += DeltaTime;
-	// 2. 만약 경과시간이 생성시간을 초과했다면
-	if (currentTime > createTime)
-	{
-		currentTime = 0;
-		// 3. 로그찍기
-		//PRINTLOG(TEXT("Create Enemy"));
-		// 적을 만들고 싶다.
-		// 위치는 EnemyManager 의 위치
-		FActorSpawnParameters Param;
-		Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	FActorSpawnParameters Param;
+	Param.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-		GetWorld()->SpawnActor<AEnemy>(enemyFactory,
-			GetActorLocation(),
-			GetActorRotation(), Param);
-	}
+	GetWorld()->SpawnActor<AEnemy>(enemyFactory,
+		GetActorLocation(),
+		GetActorRotation(), Param);
 }
 

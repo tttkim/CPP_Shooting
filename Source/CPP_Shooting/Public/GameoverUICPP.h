@@ -13,7 +13,6 @@ UCLASS()
 class CPP_SHOOTING_API UGameoverUICPP : public UUserWidget
 {
 	GENERATED_BODY()
-	
 
 public:
 	virtual void NativeConstruct() override;
@@ -25,12 +24,15 @@ public:
 	void OnQuitClicked();
 
 	// UI widget 가져오기
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	class UButton* Button_Restart;
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	class UButton* Button_Quit;
 
-	// Blueprint 에서 해당 함수를 호출할 수 있도록 설정
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidgetOptional))
+	class UButton* tempButton;
+
+	// Blueprint 에서 해당 함수를 호출 할 수 있도록 설정
 	UFUNCTION(BlueprintCallable)
 	void Restart();
 

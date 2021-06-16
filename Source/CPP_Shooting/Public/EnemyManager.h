@@ -30,7 +30,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void CreateEnemy();
 
+	UPROPERTY()
+	FTimerHandle createTimer;
 public:
 	// 필요속성 : 생성시간, 경과시간, 적공장
 	UPROPERTY(EditAnywhere, Category="Setting")

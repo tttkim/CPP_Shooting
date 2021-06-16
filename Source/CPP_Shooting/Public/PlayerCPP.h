@@ -28,18 +28,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	class UStaticMeshComponent* meshComp;
 
-	// PlayerMove 컴포넌트 추가
-	UPROPERTY(VisibleAnywhere, Category = "Component")
-	class UPlayerFire* playerFire;
-
-	// PlayerMove 컴포넌트 추가
-	UPROPERTY(VisibleAnywhere, Category = "Component")
-	class UPlayerMove* playerMove;
-
-	//// 공장
-	//UPROPERTY(EditDefaultsOnly, Category = "BulletClass")
-	//TSubclassOf<class ABullet> bulletFactory;
-
 	// 필요속성 : 총구위치, 공장
 	UPROPERTY(EditAnywhere, Category = "Component")
 	class UArrowComponent* firePosition;
@@ -47,8 +35,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Component")
 	class UArrowComponent* firePosition2;
 
+	// PlayerMove 컴포넌트 추가
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	class UPlayerMove* playerMove;
 
-
+	// PlayerFire 컴포넌트 추가
+	UPROPERTY(VisibleAnywhere, Category = "Component")
+	class UPlayerFire* playerFire;
 
 public:
 	// Sets default values for this pawn's properties

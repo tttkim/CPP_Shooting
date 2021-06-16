@@ -17,7 +17,7 @@
 APlayerCPP::APlayerCPP()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// BoxComponent 추가하기
 	boxComp = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
@@ -35,6 +35,9 @@ APlayerCPP::APlayerCPP()
 	firePosition = CreateDefaultSubobject<UArrowComponent>(TEXT("FirePosition"));
 	firePosition->SetupAttachment(boxComp);
 	firePosition->SetRelativeLocation(FVector(0, 0, 10));
+
+	firePosition2 = CreateDefaultSubobject<UArrowComponent>(TEXT("FirePosition2"));
+	firePosition2->SetupAttachment(boxComp);
 
 	// StaticMesh 데이터 동적으로 로드해서 할당하기
 	ConstructorHelpers::FObjectFinder<UStaticMesh> TempMesh(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
@@ -57,10 +60,7 @@ APlayerCPP::APlayerCPP()
 
 	// PlayerMove 컴포넌트 추가하기
 	playerMove = CreateDefaultSubobject<UPlayerMove>(TEXT("PlayerMove"));
-	
-	// PlayerFire 컴포넌트 추가하기
 	playerFire = CreateDefaultSubobject<UPlayerFire>(TEXT("PlayerFire"));
-
 }
 
 // Called when the game starts or when spawned
@@ -74,7 +74,7 @@ void APlayerCPP::BeginPlay()
 void APlayerCPP::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
 }
 
 // Called to bind functionality to input
@@ -85,5 +85,5 @@ void APlayerCPP::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 
 	playerMove->SetupPlayerInputComponent(PlayerInputComponent);
 	playerFire->SetupPlayerInputComponent(PlayerInputComponent);
-
 }
+

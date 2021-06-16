@@ -15,7 +15,7 @@ class CPP_SHOOTING_API UScoreUI : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	class UTextBlock* Text_CurrentScore;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
@@ -23,7 +23,6 @@ public:
 
 	// Current Score 출력하는 함수
 	void PrintCurrentScore(int32 point);
-
 	// Top Score 출력하는 함수
 	void PrintTopScore(int32 point);
 };

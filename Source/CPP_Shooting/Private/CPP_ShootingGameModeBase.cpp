@@ -22,6 +22,13 @@ ACPP_ShootingGameModeBase::ACPP_ShootingGameModeBase()
 	bulletPoolSize = 10;
 }
 
+void ACPP_ShootingGameModeBase::PlayingProcess(float value)
+{
+	// 3. ui 없애주자
+	startUI->RemoveFromViewport();
+	currentTime = value;
+}
+
 void ACPP_ShootingGameModeBase::InitGameState()
 {
 	Super::InitGameState();
@@ -67,7 +74,8 @@ void ACPP_ShootingGameModeBase::InitGameState()
 		GetWorld()->GetFirstPlayerController()->Possess(player);
 	}
 	// 게임의 상태를 Ready 로 설정해 주자.
-	mState = EGameState::Ready;
+	//mState = EGameState::Ready;
+	SetState(EGameState::Ready);
 
 	// readyUI 가 있다면 화면에 출력해주기
 	// -> reset 버튼이 눌렸을 때
@@ -76,32 +84,31 @@ void ACPP_ShootingGameModeBase::InitGameState()
 		readyUI->AddToViewport();
 	}
 
-	// 데이터 로드하기
-	// savedata 생성
-	saveData = Cast<USaveData>(UGameplayStatics::LoadGameFromSlot(TEXT("Score"), 0));
-
-	//// Score 데이터가 존재하는지 조사하기
-	// bool isExist = UGameplayStatics::DoesSaveGameExist(TEXT("Score"), 0);
-
-	// 만약 저장 데이터가 없으면
-	if (saveData == nullptr)
+	if (gameoverUI)
 	{
-		// SaveData 하나 만든다
+		gameoverUI->RemoveFromViewport();
+	}
+	// 데이터 로드하기
+	// 1. InitGameState
+	// -> SaveData 로드
+	saveData = Cast<USaveData>(UGameplayStatics::LoadGameFromSlot(TEXT("TopScore"), 0));
+	// -> 만약 저장데이터가 없으면
+	if(saveData == nullptr)
+	{
+		// SaveData 하나 만든다.
 		auto saveGame = UGameplayStatics::CreateSaveGameObject(USaveData::StaticClass());
 		saveData = Cast<USaveData>(saveGame);
 		saveData->topScore = 0;
-		// 저장 슬롯을 만들어준다
-		UGameplayStatics::SaveGameToSlot(saveData, TEXT("Score"), 0);
+		// 저장 슬롯 만들어준다.
+		UGameplayStatics::SaveGameToSlot(saveData, TEXT("TopScore"), 0);
 	}
-	// 저장되어 있던 score를 불러오기
+
+	// -> topScore 에 로드된 데이터 할당
 	topScore = saveData->topScore;
-	// ui에 표시해주기
-	// scoreUI 생성하고 등록하자
-	scoreUI = CreateWidget<UScoreUI>(GetWorld(), scoreUIFactory);
+	curScore = 0;
 	if (scoreUI)
 	{
-		scoreUI->AddToViewport();
-		// top score를 ui에 표시
+		// ui 에 표시해주기
 		scoreUI->PrintCurrentScore(curScore);
 		scoreUI->PrintTopScore(topScore);
 	}
@@ -111,7 +118,9 @@ void ACPP_ShootingGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	// 함수 델리게이트 연결
+	playingStateDelegate.BindUObject(this, &ACPP_ShootingGameModeBase::PlayingProcess);
+
 	// 총알 공장 주소가 없다면
 	if (bulletFactory)
 	{
@@ -137,23 +146,27 @@ void ACPP_ShootingGameModeBase::BeginPlay()
 		readyUI->AddToViewport();
 	}
 
-	// 태어날 때 Start UI 만들기
-	// 만약 Start UI 공장이 있다면
+	// start UI 만들자
 	if (startUIFactory)
 	{
-		// Start UI 를 하나 만들고 싶다.
 		startUI = CreateWidget<UUserWidget>(GetWorld(), startUIFactory);
 	}
 
-	// 태어날 때 Gameover UI 만들기
-	// 만약 Gameover UI 공장이 있다면
+	// start UI 만들자
 	if (gameoverUIFactory)
 	{
-		// gameover UI 를 하나 만들고 싶다.
 		gameoverUI = CreateWidget<UUserWidget>(GetWorld(), gameoverUIFactory);
 	}
 
-
+	// scoreui 생성하고 등록하자
+	scoreUI = CreateWidget<UScoreUI>(GetWorld(), scoreUIFactory);
+	if (scoreUI)
+	{
+		scoreUI->AddToViewport();
+		// top Score 를 ui 에 표시
+		scoreUI->PrintCurrentScore(curScore);
+		scoreUI->PrintTopScore(topScore);
+	}
 }
 
 void ACPP_ShootingGameModeBase::Tick(float DeltaSeconds)
@@ -187,7 +200,7 @@ void ACPP_ShootingGameModeBase::Tick(float DeltaSeconds)
 	switch (mState)
 	{
 	case EGameState::Ready:
-		ReadyPage();
+		//ReadyPage();
 		break;
 	case EGameState::Playing:
 		PlayingPage();
@@ -206,13 +219,14 @@ void ACPP_ShootingGameModeBase::ReadyPage()
 	//PRINTLOG(TEXT("READY STATE"));
 	// 일정시간 기다렸다가 상태를 Playing 으로 전환하고 싶다.
 	// 1. 시간이 흘렀으니까
-	currentTime += GetWorld()->DeltaTimeSeconds;
+	//currentTime += GetWorld()->DeltaTimeSeconds;
 	// 2. 일정시간이 됐으니까
 	// 	   만약 경과시간이 대기시간을 초과하였다면
-	if (currentTime > readyDelayTime)
+	//if (currentTime > readyDelayTime)
 	{
 		// 3. 상태를 Playing 으로 전환하고 싶다.
-		mState = EGameState::Playing;
+		//GetWorld()->GetTimerManager().ClearTimer(readyTimer);
+		SetState(EGameState::Playing);
 		currentTime = 0;
 
 		// 화면에 있는 ready ui 를 제거 하고 싶다.
@@ -220,7 +234,7 @@ void ACPP_ShootingGameModeBase::ReadyPage()
 		{
 			readyUI->RemoveFromViewport();
 		}
-
+		// Start UI 가 화면에 보여지게 하자
 		if (startUI)
 		{
 			startUI->AddToViewport();
@@ -232,13 +246,13 @@ void ACPP_ShootingGameModeBase::ReadyPage()
 // 게임 동작하게 한다.
 void ACPP_ShootingGameModeBase::PlayingPage()
 {
+	// 1. 시간이 흐른다.
 	currentTime += GetWorld()->DeltaTimeSeconds;
-	// 2. 일정시간이 됐으니까
-	// 	   만약 경과시간이 대기시간을 초과하였다면
+	// 2. 만약 경과시간이 start ui 시간을 초과 했다면
 	if (currentTime > startUITime)
 	{
-		startUI->RemoveFromViewport();
-		currentTime = 0;
+		playingStateDelegate.ExecuteIfBound(0);
+		
 	}
 }
 // Gameover 메뉴표현하기
@@ -326,6 +340,30 @@ void ACPP_ShootingGameModeBase::PrintEnumData_Implementation(EGameState value)
 	}
 }
 
+void ACPP_ShootingGameModeBase::SetState(EGameState s)
+{
+	mState = s;
+	FTimerHandle readyTimer;
+	switch (mState)
+	{
+	case EGameState::Ready:
+		// 타이머를 동작시킨다.
+		GetWorld()->GetTimerManager().SetTimer(readyTimer, this, &ACPP_ShootingGameModeBase::ReadyPage, readyDelayTime, false, readyDelayTime);
+	break;
+	case EGameState::Playing:
+		break;
+	case EGameState::Gameover:
+		// 게임 일시 정지
+		UGameplayStatics::SetGamePaused(GetWorld(), true);
+		// 마우스커서 보이도록 한다.
+		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
+
+		gameoverUI->AddToViewport();
+		break;
+	}
+
+}
+
 ABullet* ACPP_ShootingGameModeBase::CreateBullet()
 {	
 	// 1. 총알공장에서 총알을 만든다.
@@ -339,43 +377,29 @@ ABullet* ACPP_ShootingGameModeBase::CreateBullet()
 
 void ACPP_ShootingGameModeBase::SetCurrentScore(int32 point)
 {
-	// 현재 점수 세팅
+	// 현재 접수 세팅
 	curScore = point;
-	// UI에 표시하고 싶다
-	// 1. scoreui factory에서 scoreui 하나 만들어야 한다
-	// 2. scoeui의 ui widget에 값을 할당하고 싶다
+	// UI 에 표시하고 싶다.	
+	// scoreui 의 ui widget 에 값을 할당하고 싶다.
 	scoreUI->PrintCurrentScore(curScore);
 
+	// top score 는 언제 갱신이 될까??
 	// 현재 점수가 최고 점수를 넘어서면
 	if (curScore > topScore)
 	{
-		// 현재 점수가 최고 점수가 된다.
+		// 현재점수가 최고점수가 된다.
 		topScore = curScore;
-		// topscore ui 갱신
+		// topScore ui 갱신
 		scoreUI->PrintTopScore(topScore);
-
+		
 		saveData->topScore = topScore;
-		// 데이터를 저장
-		UGameplayStatics::SaveGameToSlot(saveData, TEXT("Score"), 0);
+
+		// 데이터를 저장해야 한다.
+		UGameplayStatics::SaveGameToSlot(saveData, TEXT("TopScore"), 0);
 	}
 }
 
 int32 ACPP_ShootingGameModeBase::GetCurrentScore()
 {
 	return curScore;
-}
-
-void ACPP_ShootingGameModeBase::SetState(EGameState s)
-{
-	mState = s;
-	// 만약 변경된 상태가 Gameover라면 widget 보여주자
-	if (mState == EGameState::Gameover)
-	{
-		// 게임 일시 정지
-		UGameplayStatics::SetGamePaused(GetWorld(), true);
-		// 마우스커서 보이도록 함
-		GetWorld()->GetFirstPlayerController()->bShowMouseCursor = true;
-
-		gameoverUI->AddToViewport();
-	}
 }

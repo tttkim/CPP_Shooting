@@ -25,9 +25,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// 사용자 입력처리 담당할 함수(Callback)
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent);
+	// 사용자 입력처리 담당할 함수 콜백
+	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
 
+public:
 	// 좌우 입력값 처리 함수 선언
 	// Axis 입력을 처리할 함수의 원형 void 함수이름(float);
 	void InputHorizontal(float value);
@@ -36,14 +37,14 @@ public:
 
 	// 좌우 입력을 받았을 때 해당 방향으로 이동하고 싶다.
 	UPROPERTY()
-		float h = 0;
+	float h = 0;
 	UPROPERTY()
-		float v = 0;
+	float v = 0;
 
 	UPROPERTY(EditAnywhere, Category = "Stat")
-		float speed = 500;
-	
-	// 컴포넌트가 포함되어 있는 Actor 객체
-	class APlayerCPP* me;
+	float speed = 500;
 
+	// 소유하고 있는 Actor 객체
+	UPROPERTY()
+	class APlayerCPP* me;
 };

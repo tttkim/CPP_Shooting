@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Bullet.h"
+#include <Blueprint/UserWidget.h>
 #include "CPP_ShootingGameModeBase.generated.h"
+
+
+DECLARE_DELEGATE_OneParam(FPlayingStateDelegate, float value)
 
 // 총알 오브젝트풀을 위한 속성 선언
 // 필요속성 : 탄창크기, 탄창(오브젝트풀), 총알공장
@@ -29,6 +33,11 @@ class CPP_SHOOTING_API ACPP_ShootingGameModeBase : public AGameModeBase
 	
 public:
 	ACPP_ShootingGameModeBase();
+
+	FPlayingStateDelegate playingStateDelegate;
+
+	UFUNCTION()
+	void PlayingProcess(float value);
 
 	// 게임이 초기화 될 때 호출됨.
 	virtual void InitGameState() override;
@@ -88,9 +97,6 @@ private:
 	UPROPERTY(EditAnywhere, Category="State", meta = (AllowPrivateAccess = true))
 	float readyDelayTime = 2;
 
-	UPROPERTY(EditAnywhere, Category = "State", meta = (AllowPrivateAccess = true))
-	float startUITime = 2;
-
 	UPROPERTY()
 	float currentTime = 0;
 
@@ -114,9 +120,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UUserWidget> gameoverUIFactory;
 
-	// Gameover ui 를 재활용 하기 위해 속성으로 등록해 놓고 사용하자.
+	// gameover ui 를 재활용 하기 위해 속성으로 등록해 놓고 사용하자.
 	UPROPERTY()
 	class UUserWidget* gameoverUI;
+
+	UPROPERTY(EditAnywhere, Category="UI", meta = (AllowPrivateAccess = true))
+	float startUITime = 1.5f;
 
 	// 현재점수
 	int32 curScore = 0;
@@ -124,10 +133,10 @@ private:
 	int32 topScore = 0;
 
 	// UserWidget -> ScoreUI
-	UPROPERTY(EditDefaultsOnly, Category = "UI", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category="UI", meta = (AllowPrivateAccess = true))
 	TSubclassOf<class UUserWidget> scoreUIFactory;
 
-	// scoreui 공장에서 만들어진 scoreui를 기억할 변수
+	// scoreui 공장에서 만들어진 scoreui 를 기억할 변수
 	UPROPERTY()
 	class UScoreUI* scoreUI;
 

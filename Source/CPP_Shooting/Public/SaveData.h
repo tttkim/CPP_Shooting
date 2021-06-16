@@ -14,8 +14,7 @@ class CPP_SHOOTING_API USaveData : public USaveGame
 {
 	GENERATED_BODY()
 	
-
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Data")
 	int32 topScore;
 };

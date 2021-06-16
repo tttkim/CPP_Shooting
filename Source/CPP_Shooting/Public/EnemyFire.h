@@ -4,17 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "PlayerFire.generated.h"
+#include "EnemyFire.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class CPP_SHOOTING_API UPlayerFire : public UActorComponent
+class CPP_SHOOTING_API UEnemyFire : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UPlayerFire();
+	UEnemyFire();
 
 protected:
 	// Called when the game starts
@@ -24,24 +24,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// 사용자 입력처리 담당할 함수 콜백
-	void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
+	// 총쏘는 함수
+	void Fire();
 
-	// 총알 발사 처리할 함수
-	void YogaFire();
-	
-public:
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+	TSubclassOf<class AEnemyBullet> bulletFactory;
 
-	float currentTime = 0;
-
-	UPROPERTY(EditAnywhere, Category="Fire Interval")
-	float createTime = 0.2f;
-
-	// 총알 발사 사운드
-	UPROPERTY(EditDefaultsOnly, Category = "Sound")
-	class USoundBase* bulletSound;
-
-	// 소유하고 있는 Actor 객체
 	UPROPERTY()
-	class APlayerCPP* me;
+	class AEnemy* me;
 };

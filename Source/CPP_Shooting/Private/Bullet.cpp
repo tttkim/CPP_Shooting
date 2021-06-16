@@ -34,6 +34,7 @@ void ABullet::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// 1. 방향이 필요하다.
+	//FVector vel = GetActorForwardVector() * speed;
 	FVector vel = GetActorRotation().Vector() * speed;
 
 	FVector P0 = GetActorLocation();

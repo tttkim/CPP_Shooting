@@ -24,8 +24,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	class AEnemy* me;
-
+		
 	// 이동속도
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stat")
 	float speed = 500;
@@ -36,4 +35,19 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Stat")
 	FVector dir = FVector(0, 0, 0);
+
+	// 폭발효과 속성
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
+	class UParticleSystem* explosionFactory;
+
+	// 폭발 사운드
+	UPROPERTY(EditDefaultsOnly, Category = "Sound")
+	class USoundBase* explosionSound;
+
+
+	UFUNCTION()
+	void OnTriggerEnter(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "Code")
+	void OnCollisionEnter(AActor* OtherActor);
 };
